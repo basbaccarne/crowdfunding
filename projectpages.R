@@ -2,7 +2,7 @@
 library (scrapeR)
 
 ## read overview of platforms
-platforms <- read.csv("../Google Drive/onderzoek - projecten/2015 Urban crowdfunding/platforms.csv", header=TRUE, sep=";")
+platforms <- read.csv("https://github.com/basbaccarne/crowdfunding/blob/master/platforms.csv", header=TRUE, sep=";")
 
 ## loop through platforms + error handling
 for(i in 1:nrow(platforms)){
