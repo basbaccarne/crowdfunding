@@ -2,33 +2,52 @@
 install.packages("scrapeR")
 library (scrapeR)
 
-## defining the dataframe
+## defining the final dataframe
 projects <- data.frame()
-#2DO: define dataframe
   
 ## read overview of platforms from github csv
 platforms <- read.csv("https://raw.githubusercontent.com/basbaccarne/crowdfunding/master/platforms.csv", header=TRUE, sep=",")
-#2DO: error handling
 
 ## loop through platforms
+# 2DO: error handling
 for(i in 1:nrow(platforms)){
 
-## voorjebuurt
+## platform: voorjebuurt
       if (toString(platforms[i, 1])=="voorjebuurt"){
             platformurl <- toString(platforms[i, 3])    
-                ##testing in -  enkel voor je buurt## 
-                  ##platformurl = toString(platforms[2,3])
-                ##testing out - enkel voor je buurt##
             pagesource <- readLines(platformurl)
             pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
             links <- as.vector(xpathSApply(pagesource.raw, "//h3//a/@href"))
-            ##2DO: data can be read better with other than readLines (cfr Curl)
-            ##2DO: add to dataframe with var "voorjebuurt"
+            projects.add <- data.frame(platform = "voorjebuurt", url = links)
+            projects <- rbind (projects, projects.add)
+            
+            # 2DO: loop through pages
 
+## platform: citizinvestor
+      } else if (toString(platforms[i, 1])=="citizinvestor"){
+            platformurl <- toString(platforms[i, 3]) 
+            pagesource <- readLines(platformurl)
+            pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+            links <- as.vector(xpathSApply(pagesource.raw, "//div[@class='project type-project']/@href"))
+        
+            # 2DO: fix challenge: javacontent
+
+## platform: growfunding
+      } else if (toString(platforms[i, 1])=="growfunding"){
+            platformurl <- toString(platforms[i, 3]) 
+            pagesource <- readLines(platformurl)
+            pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+            links <- as.vector(xpathSApply(pagesource.raw, "//a[@class='project_link btn btn-danger']/@href"))
+            links.complete <- paste("http://www.growfunding.be", links, sep = "")
+            projects.add <- data.frame(platform = "growfunding", url = links.complete)
+            projects <- rbind (projects, projects.add)
+            
+        
 ## other platforms
       } else {
             print (toString(platforms[i, 1]))
       }
 }
 
-#2DO: once dataframe complete: export to file
+## export dataframe to file
+write.csv(projects, file = "projects.csv", quote = FALSE)
