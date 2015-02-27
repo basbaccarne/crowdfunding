@@ -1,5 +1,6 @@
 ## needs R package "ScrapeR"
 require(scrapeR)
+require (jsonlite)
 
 ## defining the final dataframe
 projects <- data.frame()
@@ -35,12 +36,15 @@ for(i in 1:nrow(platforms)){
 
 ## platform: citizinvestor
       } else if (toString(platforms[i, 1])=="citizinvestor"){
-            platformurl <- toString(platforms[i, 3]) 
-            pagesource <- readLines(platformurl)
-            pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
-            links <- as.vector(xpathSApply(pagesource.raw, "//div[@class='project type-project']/@href"))
-        
-            # 2DO: fix challenge: javacontent
+            pagesource <- ("http://www.citizinvestor.com/projects/get/projects/status_nearby/all/all/")
+            pagesource.json <- fromJSON(pagesource)
+            links.df <- (pagesource.json$project[6])
+            links <- as.vector(unlist(links.df))
+            links.complete <- paste("http://www.citizinvestor.com/project/", links, sep = "")
+            projects.add <- data.frame(platform = "citizinvestor", url = links.complete)
+            projects <- rbind (projects, projects.add)
+            
+            # STatus: operational
 
 ## platform: growfunding
       } else if (toString(platforms[i, 1])=="growfunding"){
