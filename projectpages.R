@@ -1,6 +1,5 @@
 ## needs R package "ScrapeR"
-install.packages("scrapeR")
-library (scrapeR)
+require(scrapeR)
 
 ## defining the final dataframe
 projects <- data.frame()
@@ -10,18 +9,29 @@ platforms <- read.csv("https://raw.githubusercontent.com/basbaccarne/crowdfundin
 
 ## loop through platforms
 # 2DO: error handling
+# 2DO: simplify with vars
 for(i in 1:nrow(platforms)){
 
 ## platform: voorjebuurt
       if (toString(platforms[i, 1])=="voorjebuurt"){
             platformurl <- toString(platforms[i, 3])    
+            ## first page
             pagesource <- readLines(platformurl)
             pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
             links <- as.vector(xpathSApply(pagesource.raw, "//h3//a/@href"))
             projects.add <- data.frame(platform = "voorjebuurt", url = links)
             projects <- rbind (projects, projects.add)
+            ## loop trough pages (N = 9)
+            platformurl.pages <- paste(platformurl, "page/", c(2:9), sep ="")
+            for (j in platformurl.pages) {
+              pagesource <- readLines(j)
+              pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+              links <- as.vector(xpathSApply(pagesource.raw, "//h3//a/@href"))
+              projects.add <- data.frame(platform = "voorjebuurt", url = links)
+              projects <- rbind (projects, projects.add)
+            }
             
-            # 2DO: loop through pages
+            # Status: ready
 
 ## platform: citizinvestor
       } else if (toString(platforms[i, 1])=="citizinvestor"){
@@ -42,7 +52,9 @@ for(i in 1:nrow(platforms)){
             projects.add <- data.frame(platform = "growfunding", url = links.complete)
             projects <- rbind (projects, projects.add)
             
-        
+            # Status: ready
+            
+            
 ## other platforms
       } else {
             print (toString(platforms[i, 1]))
