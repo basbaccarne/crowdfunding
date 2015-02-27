@@ -58,6 +58,7 @@ for(i in 1:nrow(platforms)){
       } else if (toString(platforms[i, 1])=="neighbourly"){
             platformurl <- toString(platforms[i, 3]) 
             pagesource<- readLines(platformurl)
+            pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
             links <- as.vector(xpathSApply(pagesource.raw, "//a[@data-external='true']/@href"))
             links.complete <- paste("https://www.neighbourly.com", links, sep = "")
             projects.add <- data.frame(platform = "neighbourly", url = links.complete)
@@ -67,6 +68,15 @@ for(i in 1:nrow(platforms)){
             
 ## platform: spacehive
       } else if (toString(platforms[i, 1])=="spacehive"){
+            platformurl <- "https://spacehive.com/ProjectSearch/"
+            pagesource<- readLines(platformurl)
+            pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+            links <- as.vector(xpathSApply(pagesource.raw, "//div[@class = 'image-container']/a/@href"))
+            links.complete <- paste("https://spacehive.com/", links, sep = "")
+            projects.add <- data.frame(platform = "spacehive", url = links.complete)
+            projects <- rbind (projects, projects.add)
+            
+            ## Status: only page one
             
             
 ## other platforms
