@@ -54,7 +54,7 @@ for(i in 1:nrow(platforms)){
             
             # Status: operational
             
-# platform: neighbour.ly
+## platform: neighbour.ly
       } else if (toString(platforms[i, 1])=="neighbourly"){
             platformurl <- toString(platforms[i, 3]) 
             pagesource<- readLines(platformurl)
@@ -64,6 +64,10 @@ for(i in 1:nrow(platforms)){
             projects <- rbind (projects, projects.add)
             
             ## Status: only 29 project urls are scraped // this is not everything
+            
+## platform: spacehive
+      } else if (toString(platforms[i, 1])=="spacehive"){
+            
             
 ## other platforms
       } else {
