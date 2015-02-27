@@ -31,7 +31,7 @@ for(i in 1:nrow(platforms)){
               projects <- rbind (projects, projects.add)
             }
             
-            # Status: ready
+            # Status: operational
 
 ## platform: citizinvestor
       } else if (toString(platforms[i, 1])=="citizinvestor"){
@@ -52,8 +52,18 @@ for(i in 1:nrow(platforms)){
             projects.add <- data.frame(platform = "growfunding", url = links.complete)
             projects <- rbind (projects, projects.add)
             
-            # Status: ready
+            # Status: operational
             
+# platform: neighbour.ly
+      } else if (toString(platforms[i, 1])=="neighbourly"){
+            platformurl <- toString(platforms[i, 3]) 
+            pagesource<- readLines(platformurl)
+            links <- as.vector(xpathSApply(pagesource.raw, "//a[@data-external='true']/@href"))
+            links.complete <- paste("https://www.neighbourly.com", links, sep = "")
+            projects.add <- data.frame(platform = "neighbourly", url = links.complete)
+            projects <- rbind (projects, projects.add)
+            
+            ## Status: only 29 project urls are scraped // this is not everything
             
 ## other platforms
       } else {
