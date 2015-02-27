@@ -77,7 +77,18 @@ for(i in 1:nrow(platforms)){
             projects <- rbind (projects, projects.add)
             
             ## Status: only page one
-            
+
+## platform: IOBY
+      } else if (toString(platforms[i, 1])=="spacehive"){
+            platformurl <- "https://www.ioby.org/projects?phrase=&city=&province=&status=1&vols=All&sort_by=title&sort_order=ASC&items_per_page=All"
+            pagesource<- readLines(platformurl)
+            pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+            links <- as.vector(xpathSApply(pagesource.raw, "//h3/a/@href"))
+            links.complete <- paste("https://www.ioby.org", links, sep = "")
+            projects.add <- data.frame(platform = "spacehive", url = links.complete)
+            projects <- rbind (projects, projects.add)
+        
+        ## Status: operational
             
 ## other platforms
       } else {
