@@ -1,3 +1,7 @@
+## this function returns all project pages + the platform
+## execution writes a csv to the working dir
+## store in var if you want to work with the R object
+
 projectpages <- function () {
 ## needs R package "ScrapeR"
 require(scrapeR)
