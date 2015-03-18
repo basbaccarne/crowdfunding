@@ -14,11 +14,11 @@ Files:
 * platforms.csv - overview of platforms (names, url, projecturl, language) - Feel free to add
 * projects.csv - overview of de projecturls (platform, url, timestamp) on different platforms
 * projectpages.R - R script to extract project urls from platform pages (output: projects.scv)
-  ** platforms ok: voorjebuurt, citizinvestor, growfunding, IOBY, geeferom, hkb, zcfp, dordrechtvanstart, maakcapelle, communityfunded, uruut, smallknot
-  ** platforms not fully operational: neighbour.ly, spacehive, onepercentclub
-  ** platforms temp excluded (lang): urbankit, goteo, ideaginger
-  ** 2 DO: clean code (concise and better flexibity)
+  * platforms ok: voorjebuurt, citizinvestor, growfunding, IOBY, geeferom, hkb, zcfp, dordrechtvanstart, maakcapelle, communityfunded, uruut, smallknot
+  * platforms not fully operational: neighbour.ly, spacehive, onepercentclub
+  * platforms temp excluded (lang): urbankit, goteo, ideaginger
+  * 2 DO: clean code (concise and better flexibity)
 * projectscraping.R - R script to extract variables from project pages (output: dataset.csv)
-  ** status: to be started
+  * status: to be started
 
 More information? Contact bastiaan.baccarne@ugent.be
