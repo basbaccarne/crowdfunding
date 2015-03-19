@@ -48,6 +48,7 @@ getRawData <- function() {
         } else {
                                 
                 # platform by platform to avoid server errors
+                # heavy load!!
                 
                 dumpToRawdata <- function (platform){
                         fresh.dump <- data.frame(
@@ -97,6 +98,42 @@ voorjebuurt <- function (url, dump){
                    success, status, facebookurl, facebooklikes, commentcount, 
                    backercount, pitch)
 }
+## Status: WIP (lots of NAs)
+
+citizinvestor <- function (url, dump){
+        dump <- as.character(citizinvestor.raw$dump[1])
+        url <- citizinvestor.raw$url[1]
+        pagesource <- htmlTreeParse(as.character(dump), useInternalNodes = T)
+        
+        url <- url
+        timestamp <- Sys.Date()
+        platform <- "citizinvestor"
+        lang <- "EN"
+        projectname <- xpathSApply(pagesource, "//h1", xmlValue)[2]
+        pledged <- gsub ("out of \\$", "", xpathSApply(pagesource, "//span", xmlValue)[6])
+        pledged <- gsub (" required", "", pledged)
+        pledged <- as.numeric(gsub (",", ".", pledged))
+        received <- as.numeric(gsub ("\\$", "", xpathSApply(pagesource, "//span", xmlValue)[5]))
+        currency <- "usd"
+        success <- received > pledged
+        start <- NA
+        end <- NA        
+        daysleft <- as.numeric(xpathSApply(pagesource, "//span", xmlValue)[1])
+        status <- NA
+        if (daysleft > 0) {
+                status <- "active"
+        }else if (daysleft < 0) {
+                status <- "completed"}
+        facebookurl <- NA
+        facebooklikes <- NA
+        commentcount <- NA
+        backercount <- as.numeric(xpathSApply(pagesource, "//span", xmlValue)[3])
+        pitch <- xpathSApply(pagesource, "//p", xmlValue)[2]
+        
+        data.frame(url, timestamp, platform, lang, projectname, pledged, received, currency,
+                   success, status, facebookurl, facebooklikes, commentcount, 
+                   backercount, pitch)
+}
 
 zcfp <- function(url, dump){
         #dump <- as.character(raw.data$dump[246])
@@ -123,6 +160,8 @@ zcfp <- function(url, dump){
           success, status, facebookurl, facebooklikes, commentcount, 
           backercount, pitch)
 }
+## Status: WIP (only 2 projects, different page structure)
+
 
 
 ################## PART IV: EXECUTE PARSE FUNCTIONS ################## 
@@ -132,10 +171,14 @@ for (i in 1:nrow(voorjebuurt.raw)){
                 voorjebuurt.raw$url[i], 
                 voorjebuurt.raw$dump[i]))
 }
-## Status: WIP (lots of NAs)
+
+for (i in 1:nrow(citizinvestor.raw)){
+        dataset <- rbind(dataset, citizinvestor(
+                citizinvestor.raw$url[i], 
+                citizinvestor.raw$dump[i]))
+}
 
 for (i in 1:nrow(zcfp.raw)){
         dataset <- rbind(dataset, zcfp(zcfp.raw$url[i], zcfp.raw$dump[i]))
 }
-## Status: WIP (only 2 projects, different page structure)
 
