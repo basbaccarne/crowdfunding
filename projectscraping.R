@@ -2,6 +2,7 @@
 
 require(scrapeR)
 require (jsonlite)
+require (stringr)
 
 initiatlize <- function (){
 
@@ -19,13 +20,15 @@ initiatlize <- function (){
           received = numeric(0),
           currency = character(0),
           success = logical(),
-          status = character(0),
+          start = character(0),
+          end = character(0),
+          runtime = character(0),
+          finished = logical(),
           facebookurl = character(0),
           facebooklikes = numeric(0),
           commentcount = character(0),
           backercount = character(0),
           pitch = character(0))
-
 }
 initiatlize()
 
@@ -59,8 +62,9 @@ getRawData <- function() {
                                                readLines)))
                         filename <- paste("./rawdata/", platform, ".R", sep = "")
                         dput (fresh.dump, filename)  
-                }    
+                }  
                 
+                ## status: error for communityfunded & dordrechtvanstart
         }
         
 }
@@ -70,8 +74,8 @@ getRawData()
 #################### PART III: DOM PARSE FUNCTIONS #################### 
 
 voorjebuurt <- function (url, dump){
-        #dump <- as.character(voorjebuurt.raw$dump[1])
-        #url <- voorjebuurt.raw$url[1]
+        #dump <- as.character(voorjebuurt.raw$dump[2])
+        #url <- voorjebuurt.raw$url[2]
         pagesource <- htmlTreeParse(as.character(dump), useInternalNodes = T)
         
         url <- url
@@ -79,30 +83,41 @@ voorjebuurt <- function (url, dump){
         platform <- "voorjebuurt"
         lang <- "NL"
         projectname <- xpathSApply(pagesource, "//h1", xmlValue)[2]
-        pledged <- gsub("22% van â,¬", "", xpathSApply(pagesource, "//p", xmlValue)[2])
-        pledged <- as.numeric(gsub(",", ".", pledged))
-        received <- gsub("â,¬", "", xpathSApply(pagesource, "//h3", xmlValue)[2])
-        received <- as.numeric(gsub(",", ".", received))
+        pledged <- xpathSApply(pagesource, "//li[contains(@class, 'progress')]/p", xmlValue)
+        pledged <- gsub("â,¬","",(strsplit(pledged, " ")[[1]][3]))
+        pledged <- as.numeric(gsub(",",".",gsub(".","",pledged, fixed = TRUE)))
+        received <- gsub("â,¬", "", xpathSApply(pagesource, "//li[contains(@class, 'progress')]/h3", xmlValue))
+        received <- as.numeric(gsub(",",".",gsub(".","",received, fixed = TRUE)))
         currency <- "euro"
         success <- received > pledged
-        start <- NA
-        end <- NA        
-        status <- NA
-        facebookurl <- NA
+        start <- gsub("\\\", \\\"\\\\t\\\\t\\\", \\\"\\\\t\\\\tGestart op ","",xpathSApply(pagesource, "//div[contains(@class, 'date')]", xmlValue))
+        start <- strptime(gsub("\\\\t", "", start), "%d %B %Y") 
+        end <- xpathSApply(pagesource, "//div[contains(@class, 'funding-ends')]", xmlValue)
+        end <- gsub("\\\", \\\"\\\\t\\\\t\\\", \\\"\\\\t\\\\tEindigt op ","",end,)
+        end <- strptime(gsub("\\\\t", "", end), "%d %B %Y")
+        runtime <- difftime(end, start, units = 'days')
+        finished <- difftime(timestamp, end, units = 'days')>0
+        facebookurl <- xpathSApply(pagesource, "//a[contains(@href,'www.facebook.com')]", xmlValue)[1]
         facebooklikes <- NA
-        commentcount <- paste (url, "#comments", sep ="")
-        backercount <- paste (url, "#backers", sep ="")
-        pitch <- NA
+        commentcount <- xpathSApply(pagesource, "//h2[contains(@class,'comments-title')]", xmlValue)
+        commentcount <- gsub("\\\", \\\"\\\\t\\\\t\\\\t","",commentcount)
+        commentcount <- as.numeric(gsub(" Reactie\\\\t\\\\t","",commentcount))
+        if(length(commentcount) == 0) commentcount <- 0
+        backercount <- as.numeric(xpathSApply(pagesource, "//li[contains(@class,'backer-count')]/h3", xmlValue)[1])
+        pitch <- xpathSApply(pagesource, "//div[contains(@id, 'descrip')]", xmlValue)
+        pitch <- gsub("\\\", \\\"\\\\t\\\\t\\\\t\\\\t\\\\t\\\\t\\\\t","", pitch)
+        pitch <- gsub("\\\", \\\"\\\", \\n\\\"\\\", \\n\\\"\\\", \\\"\\\", \\\"\\\", \\n\\\"\\\", \\n\\\"\\\", \\\"\\\\t\\\\t\\\\t\\\\t\\\\t\\\\t","",pitch)
+        pitch <- gsub("\\\", \\n\\\"","",gsub("\\\", \\\"","",pitch))
         
         data.frame(url, timestamp, platform, lang, projectname, pledged, received, currency,
-                   success, status, facebookurl, facebooklikes, commentcount, 
+                   success, start, end, runtime, finished, facebookurl, facebooklikes, commentcount, 
                    backercount, pitch)
 }
 ## Status: WIP (lots of NAs)
 
 citizinvestor <- function (url, dump){
-        dump <- as.character(citizinvestor.raw$dump[1])
-        url <- citizinvestor.raw$url[1]
+        #dump <- as.character(citizinvestor.raw$dump[1])
+        #url <- citizinvestor.raw$url[1]
         pagesource <- htmlTreeParse(as.character(dump), useInternalNodes = T)
         
         url <- url
@@ -117,13 +132,13 @@ citizinvestor <- function (url, dump){
         currency <- "usd"
         success <- received > pledged
         start <- NA
-        end <- NA        
-        daysleft <- as.numeric(xpathSApply(pagesource, "//span", xmlValue)[1])
-        status <- NA
+        end <- NA
+        runtime <- NA
+        finished <- NA
         if (daysleft > 0) {
-                status <- "active"
+                finished <- "active"
         }else if (daysleft < 0) {
-                status <- "completed"}
+                finished <- "completed"}
         facebookurl <- NA
         facebooklikes <- NA
         commentcount <- NA
@@ -131,7 +146,7 @@ citizinvestor <- function (url, dump){
         pitch <- xpathSApply(pagesource, "//p", xmlValue)[2]
         
         data.frame(url, timestamp, platform, lang, projectname, pledged, received, currency,
-                   success, status, facebookurl, facebooklikes, commentcount, 
+                   success, start, end, runtime, finished, facebookurl, facebooklikes, commentcount, 
                    backercount, pitch)
 }
 
@@ -148,6 +163,9 @@ zcfp <- function(url, dump){
         received <- gsub("Ã¢Â,Â¬ ", "", xmlValue(xpathSApply(pagesource, "//h4")[[2]]))
         currency <- "euro"
         success <- received > pledged
+        start <- NA
+        end <- NA
+        runtime <- NA
         status <- NA
         facebookurl <- NA
         facebooklikes <- NA
@@ -157,7 +175,7 @@ zcfp <- function(url, dump){
         pitch <- paste(pitch[2:(length(pitch)-2)], collapse = " ")
 
         data.frame(url, timestamp, platform, lang, projectname, pledged, received, currency,
-          success, status, facebookurl, facebooklikes, commentcount, 
+          success, start, end, runtime, finished, facebookurl, facebooklikes, commentcount, 
           backercount, pitch)
 }
 ## Status: WIP (only 2 projects, different page structure)
