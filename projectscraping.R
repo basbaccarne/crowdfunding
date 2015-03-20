@@ -1,7 +1,6 @@
 ####################### PART I: INITIATLISATION ####################### 
 
 require(scrapeR)
-require (jsonlite)
 require (stringr)
 
 initiatlize <- function (){
@@ -35,41 +34,53 @@ initiatlize()
 
 #################### PART II: GETTING THE RAW DATA #####################
 
-getRawData <- function() {
+getRawData <- function(platform = "all") {
 
         if (file.exists("rawdata")){
-                filenames <- list.files("rawdata", full.names=T)
-                for (file in filenames){
-                        filename <- gsub(".R", ".raw", file)
-                        filename <- gsub("rawdata/", "", filename)
+                if (platform=="all"){
+                        filenames <- list.files("rawdata", full.names=T)
+                        for (file in filenames){
+                                filename <- gsub(".R", ".raw", file)
+                                filename <- gsub("rawdata/", "", filename)
+                                raw.data <- dget(file)
+                                assign(filename, dget(file), envir=.GlobalEnv)
+                        }
+                } else {
+                        file <- paste("rawdata/", platform, ".R", sep="")
+                        if (!file.exists(file)){
+                                stop ("platform not found, please check 'rawdata' folder of run dumpToRawdata()")
+                                return
+                        }
+                        filenames <- paste(platform, ".R", sep="")
                         raw.data <- dget(file)
-                        assign(filename, dget(file), envir=.GlobalEnv)
+                        assign(filenames, dget(file), envir=.GlobalEnv)
                 }
-                
                 cat ("## added to global environment from cache:", filenames)
                 
         } else {
-                                
-                # platform by platform to avoid server errors
-                # heavy load!!
-                
-                dumpToRawdata <- function (platform){
-                        fresh.dump <- data.frame(
-                                url = projects$url[projects$platform == platform],
-                                dump = as.character(
-                                        lapply(as.character(
-                                                projects$url[projects$platform == platform]), 
-                                               readLines)))
-                        filename <- paste("./rawdata/", platform, ".R", sep = "")
-                        dput (fresh.dump, filename)  
-                }  
-                
-                ## status: error for communityfunded & dordrechtvanstart
+                stop ("rawdata folder not found, please check working dir or create folder")
         }
         
 }
 getRawData()
 
+dumpToRawdata <- function (platform){
+        
+        # platform by platform to avoid server errors
+        # heavy load!!
+        
+        fresh.dump <- data.frame(
+                url = projects$url[projects$platform == platform],
+                dump = as.character(
+                        lapply(as.character(
+                                projects$url[projects$platform == platform]), 
+                               readLines)))
+        filename <- paste("./rawdata/", platform, ".R", sep = "")
+        dput (fresh.dump, filename)  
+        
+        ## status: error for communityfunded & dordrechtvanstart
+        
+}  
 
 #################### PART III: DOM PARSE FUNCTIONS #################### 
 
