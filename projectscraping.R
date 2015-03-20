@@ -31,7 +31,6 @@ initiatlize <- function (){
 }
 initiatlize()
 
-
 #################### PART II: GETTING THE RAW DATA #####################
 
 getRawData <- function(platform = "all") {
@@ -51,7 +50,7 @@ getRawData <- function(platform = "all") {
                                 stop ("platform not found, please check 'rawdata' folder of run dumpToRawdata()")
                                 return
                         }
-                        filenames <- paste(platform, ".R", sep="")
+                        filenames <- paste(platform, ".raw", sep="")
                         raw.data <- dget(file)
                         assign(filenames, dget(file), envir=.GlobalEnv)
                 }
@@ -62,8 +61,6 @@ getRawData <- function(platform = "all") {
         }
         
 }
-getRawData()
-
 dumpToRawdata <- function (platform){
         
         # platform by platform to avoid server errors
@@ -85,8 +82,8 @@ dumpToRawdata <- function (platform){
 #################### PART III: DOM PARSE FUNCTIONS #################### 
 
 voorjebuurt <- function (url, dump){
-        #dump <- as.character(voorjebuurt.raw$dump[2])
-        #url <- voorjebuurt.raw$url[2]
+        #dump <- as.character(voorjebuurt.raw$dump[41])
+        #url <- voorjebuurt.raw$url[41]
         pagesource <- htmlTreeParse(as.character(dump), useInternalNodes = T)
         
         url <- url
@@ -100,12 +97,13 @@ voorjebuurt <- function (url, dump){
         received <- gsub("â,¬", "", xpathSApply(pagesource, "//li[contains(@class, 'progress')]/h3", xmlValue))
         received <- as.numeric(gsub(",",".",gsub(".","",received, fixed = TRUE)))
         currency <- "euro"
-        success <- received > pledged
+        success <- received >= pledged
         start <- gsub("\\\", \\\"\\\\t\\\\t\\\", \\\"\\\\t\\\\tGestart op ","",xpathSApply(pagesource, "//div[contains(@class, 'date')]", xmlValue))
         start <- strptime(gsub("\\\\t", "", start), "%d %B %Y") 
         end <- xpathSApply(pagesource, "//div[contains(@class, 'funding-ends')]", xmlValue)
         end <- gsub("\\\", \\\"\\\\t\\\\t\\\", \\\"\\\\t\\\\tEindigt op ","",end,)
         end <- strptime(gsub("\\\\t", "", end), "%d %B %Y")
+        if(length(end) == 0) end <- NA
         runtime <- difftime(end, start, units = 'days')
         finished <- difftime(timestamp, end, units = 'days')>0
         facebookurl <- xpathSApply(pagesource, "//a[contains(@href,'www.facebook.com')]", xmlValue)[1]
@@ -124,7 +122,7 @@ voorjebuurt <- function (url, dump){
                    success, start, end, runtime, finished, facebookurl, facebooklikes, commentcount, 
                    backercount, pitch)
 }
-## Status: WIP (lots of NAs)
+## Status: WIP (look at NAs, and fact check)
 
 citizinvestor <- function (url, dump){
         #dump <- as.character(citizinvestor.raw$dump[1])
@@ -136,25 +134,25 @@ citizinvestor <- function (url, dump){
         platform <- "citizinvestor"
         lang <- "EN"
         projectname <- xpathSApply(pagesource, "//h1", xmlValue)[2]
-        pledged <- gsub ("out of \\$", "", xpathSApply(pagesource, "//span", xmlValue)[6])
-        pledged <- gsub (" required", "", pledged)
-        pledged <- as.numeric(gsub (",", ".", pledged))
-        received <- as.numeric(gsub ("\\$", "", xpathSApply(pagesource, "//span", xmlValue)[5]))
+        pledged <- xpathSApply(pagesource, "//div[contains(@class, 'amount')]/span", xmlValue)[2]
+        pledged <- as.numeric(gsub(",",".",gsub(" required","",gsub("out of \\$","",pledged))))
+        received <- xpathSApply(pagesource, "//span[contains(@class, 'number')]", xmlValue)[3]
+        received <- as.numeric(gsub("\\$","",received))
         currency <- "usd"
-        success <- received > pledged
+        success <- received >= pledged
         start <- NA
-        end <- NA
+        end <- xpathSApply(pagesource, "//span[contains(@class, 'number')]", xmlValue)[1]
+        end <- as.Date(timestamp + as.numeric(end))
+        if(length(end) == 0) end <- NA
         runtime <- NA
-        finished <- NA
-        if (daysleft > 0) {
-                finished <- "active"
-        }else if (daysleft < 0) {
-                finished <- "completed"}
-        facebookurl <- NA
+        finished <- difftime(timestamp, end, units = 'days')>0
+        facebookurl <- xpathSApply(pagesource, "//a[contains(@href,'www.facebook.com')]", xmlValue)[1]
         facebooklikes <- NA
         commentcount <- NA
-        backercount <- as.numeric(xpathSApply(pagesource, "//span", xmlValue)[3])
-        pitch <- xpathSApply(pagesource, "//p", xmlValue)[2]
+        backercount <- as.numeric(xpathSApply(pagesource, "//span[contains(@class,'number')]", xmlValue)[2])
+        pitch <- paste(xpathSApply(pagesource, "//div[contains(@class, 'summary')]/*/p", xmlValue), collapse="")
+        pitch <- str_replace_all(pitch, "[^[:alnum:]]", " ")
+        pitch <- gsub("     ","",pitch)
         
         data.frame(url, timestamp, platform, lang, projectname, pledged, received, currency,
                    success, start, end, runtime, finished, facebookurl, facebooklikes, commentcount, 
@@ -190,8 +188,6 @@ zcfp <- function(url, dump){
           backercount, pitch)
 }
 ## Status: WIP (only 2 projects, different page structure)
-
-
 
 ################## PART IV: EXECUTE PARSE FUNCTIONS ################## 
 
