@@ -20,7 +20,7 @@ for(i in 1:nrow(platforms)){
 
 ## platform: [1] citizinvestor
         
-        if (toString(platforms[i, 1])=="citizinvestor"){
+        if (platforms[i, 1]=="citizinvestor"){
                 pagesource <- "http://www.citizinvestor.com/projects/get/projects/status_nearby/all/all/"
                 pagesource.json <- fromJSON(pagesource)
                 links.df <- (pagesource.json$project[6])
@@ -29,6 +29,8 @@ for(i in 1:nrow(platforms)){
                 projects.add <- data.frame(platform = "citizinvestor", url = links.complete)
                 projects <- rbind (projects, projects.add)
         
+                cat ("added citizinvestor to cache: ", length(projects$platform[projects$platform=="citizinvestor"]))
+                
         # Status: operational -- more metadata in json file
         
 ## platform: [2] voorjebuurt
@@ -51,6 +53,8 @@ for(i in 1:nrow(platforms)){
               projects <- rbind (projects, projects.add)
             }
             
+            cat ("added voorjebuurt to cache: ", length(projects$platform[projects$platform=="voorjebuurt"]))
+            
             # Status: operational
 
 ## platform: [3] growfunding
@@ -64,33 +68,41 @@ for(i in 1:nrow(platforms)){
             projects.add <- data.frame(platform = "growfunding", url = links.complete)
             projects <- rbind (projects, projects.add)
             
+            cat ("added growfunding to cache: ", length(projects$platform[projects$platform=="growfunding"]))
+            
             # Status: operational
             
-## platform: [4] neighbour.ly
+## platform: [4] neighbourly
 
       } else if (toString(platforms[i, 1])=="neighbourly"){
-            platformurl <- toString("https://www.neighbourly.com/projects") 
-            pagesource<- readLines(platformurl)
-            pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
-            links <- as.vector(xpathSApply(pagesource.raw, "//a[@data-external='true']/@href"))
-            links.complete <- paste("https://www.neighbourly.com", links, sep = "")
-            projects.add <- data.frame(platform = "neighbourly", url = links.complete)
-            projects <- rbind (projects, projects.add)
-            
-            ## Status: in progress: only 29 project urls are scraped // this is not everything
+              pagesource <- "https://www.neighbourly.com/api/projects/?page=1&pageSize=1500&filter=&orderBy=id+desc"
+              pagesource.json <- fromJSON(pagesource)
+              links.df <- (pagesource.json[,1])
+              links <- as.vector(unlist(links.df))
+              links.complete <- paste("https://www.neighbourly.com/projects/", links, sep = "")
+              projects.add <- data.frame(platform = "neighbourly", url = links.complete)
+              projects <- rbind (projects, projects.add)
+              
+              cat ("added neighbourly to cache: ", length(projects$platform[projects$platform=="neighbourly"]))
+              
+              # Status: operational -- more metadata in json file
             
 ## platform: [5] spacehive
 
       } else if (toString(platforms[i, 1])=="spacehive"){
-            platformurl <- "https://spacehive.com/ProjectSearch/"
-            pagesource<- readLines(platformurl)
-            pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
-            links <- as.vector(xpathSApply(pagesource.raw, "//div[@class = 'image-container']/a/@href"))
-            links.complete <- paste("https://spacehive.com/", links, sep = "")
-            projects.add <- data.frame(platform = "spacehive", url = links.complete)
-            projects <- rbind (projects, projects.add)
+              platformurl <- "http://spacehive.com/ProjectSearch#Concept=false&Design=false&Verified=false&Fundraising=false&Complete=false&Sport+%26+Play=false&Green+Space=false&Art+%26+Performance=false&Civic+Space=false&Food+%26+Farms=false&Infrastructure=false&Something+Different=false&orderBy=&page="
+              platformurl.pages <- paste(platformurl, c(1:89), sep ="")
+              for (j in platformurl.pages) {
+                      pagesource<- scrape(j)
+                      links <- as.vector(xpathSApply(pagesource[[1]], "//div[@class = 'image-container']/a/@href"))
+                      links.complete <- paste("https://spacehive.com", links, sep = "")
+                      projects.add <- data.frame(platform = "spacehive", url = links.complete)
+                      projects <- rbind (projects, projects.add)
+              }
+              
+              cat ("added spacehive to cache: ", length(projects$platform[projects$platform=="spacehive"]))
             
-            ## Status: only page one
+            ## Status: operational
 
 ## platform: [6] IOBY
 
@@ -103,6 +115,8 @@ for(i in 1:nrow(platforms)){
             projects.add <- data.frame(platform = "ioby", url = links.complete)
             projects <- rbind (projects, projects.add)
         
+            cat ("added IOBY to cache: ", length(projects$platform[projects$platform=="ioby"]))
+            
             ## Status: operational
             
 ## platform: [7] geeferom
@@ -116,6 +130,8 @@ for(i in 1:nrow(platforms)){
               projects.add <- data.frame(platform = "geeferom", url = links.complete)
               projects <- rbind (projects, projects.add)
                 
+              cat ("added geeferom to cache: ", length(projects$platform[projects$platform=="geeferom"]))
+              
               ## Status: operational
 
 ## platform: [8] hkb
@@ -129,6 +145,8 @@ for(i in 1:nrow(platforms)){
               projects.add <- data.frame(platform = "hkb", url = links.complete)
               projects <- rbind (projects, projects.add)
               
+              cat ("added hkb to cache: ", length(projects$platform[projects$platform=="hkb"]))
+              
               ## Status: operational
               
 ## platform: [9] zcfp
@@ -141,6 +159,8 @@ for(i in 1:nrow(platforms)){
               links.complete <- paste("http://www.zcfp.nl", links, sep = "")
               projects.add <- data.frame(platform = "zcfp", url = links.complete)
               projects <- rbind (projects, projects.add)
+              
+              cat ("added zcfp to cache: ", length(projects$platform[projects$platform=="zcfp"]))
               
               ## Status: operational
 
@@ -157,6 +177,8 @@ for(i in 1:nrow(platforms)){
                       projects.add <- data.frame(platform = "dordrechtvanstart", url = links.complete)
                       projects <- rbind (projects, projects.add)
               }
+              
+              cat ("added dordrechtvanstart to cache: ", length(projects$platform[projects$platform=="dordrechtvanstart"]))
               
               ## Status: operational            
             
@@ -177,25 +199,51 @@ for(i in 1:nrow(platforms)){
                       projects <- rbind (projects, projects.add)
               }
               
+              cat ("added maakcapelle to cache: ", length(projects$platform[projects$platform=="maakcapelle"]))
+              
               ## Status: operational  
               
 ## platform: [12] onepercentclub
 
-
-
-              ## Status: To process
+      } else if (toString(platforms[i, 1])=="onepercentclub"){
+                platformurl <- "https://onepercentclub.com/api/bb_projects/previews/?page="
+                platformurl.pages <- paste(platformurl, c(1:9), "&page_size=100&format=json", sep ="")
+                
+                for (j in platformurl.pages) {
+                        pagesource.json <- fromJSON(j)
+                        links <- (pagesource.json$results$id)
+                        links.complete <- paste("https://onepercentclub.com/en/#!/projects/", links, sep = "")
+                        projects.add <- data.frame(platform = "onepercentclub", url = links.complete)
+                        projects <- rbind (projects, projects.add)
+                }
+        
+                cat ("added onepercentclub to cache: ", length(projects$platform[projects$platform=="onepercentclub"]))
+                
+                # Status: operational -- more metadata in json file
 
 ## platform: [13] urbankit
 
-
-
-             ## Status: To process
+      } else if (toString(platforms[i, 1])=="urbankit"){
+              print ("urbankit was not imported. Reason: platform went offline")
+              
+              ## Status: platform offline
 
 ## platform: [14] goteo
+      } else if (toString(platforms[i, 1])=="goteo"){
+                platformurl <- "http://www.goteo.org/discover/view/success?page="
+                platformurl.pages <- paste(platformurl, c(1:40), sep ="")
+                for (j in platformurl.pages) {
+                        pagesource <- readLines(j)
+                        pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+                        links <- as.vector(xpathSApply(pagesource.raw, "//h3[contains(@class, 'title')]/a/@href"))
+                        links.complete <- paste("http://www.goteo.org", links, sep = "")
+                        projects.add <- data.frame(platform = "goteo", url = links.complete)
+                        projects <- rbind (projects, projects.add)
+                }
 
-
-
-             ## Status: To process
+                cat ("added goteo to cache: ", length(projects$platform[projects$platform=="goteo"]))
+                
+                ## Status: operational
 
 ## platform: [15] communityfunded
 
@@ -210,6 +258,8 @@ for(i in 1:nrow(platforms)){
                       projects.add <- data.frame(platform = "communityfunded", url = links)
                       projects <- rbind (projects, projects.add)
               }
+              
+              cat ("added communityfunded to cache: ", length(projects$platform[projects$platform=="communityfunded"]))
               
               ## Status: operational
 
@@ -230,6 +280,8 @@ for(i in 1:nrow(platforms)){
               projects.add <- data.frame(platform = "uruut", url = links.complete)
               projects <- rbind (projects, projects.add)
               
+              cat ("added uruut to cache: ", length(projects$platform[projects$platform=="uruut"]))
+              
               ## Status: operational
 
 ## platform: [17] smallknot
@@ -242,43 +294,98 @@ for(i in 1:nrow(platforms)){
               projects.add <- data.frame(platform = "smallknot", url = links)
               projects <- rbind (projects, projects.add)
               
+              cat ("added smallknot to cache: ", length(projects$platform[projects$platform=="smallknot"]))
+              
               ## Status: operational
 
 ## platform: [18] ideaginger
+
+      } else if (toString(platforms[i, 1])=="ideaginger"){
+              platformurl <- "http://www.ideaginger.it/progetti.html"
+              pagesource<- readLines(platformurl)
+              pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+              links <- as.vector(xpathSApply(pagesource.raw, "//div[@class='titolo_prog_ns']/*/a/@href"))
+              links.complete <- paste("http:/www.ideaginger.it", links, sep = "")
+              projects.add <- data.frame(platform = "ideaginger", url = links.complete)
+              projects <- rbind (projects, projects.add)
               
+              cat ("added ideaginger to cache: ", length(projects$platform[projects$platform=="ideaginger"]))
               
-              
-              ## Status: To process
+              ## Status: operational
 
 ## platform: [19] neighborly
 
+        } else if (toString(platforms[i, 1])=="neighborly"){
+                pagesource <- "https://neighborly.com/discover.json"
+                pagesource.json <- fromJSON(pagesource)
+                links.df <- (pagesource.json$deal_profile$deals$html_url)
+                links <- as.vector(unlist(links.df))
+                projects.add <- data.frame(platform = "neighborly", url = links)
+                projects <- rbind (projects, projects.add)
 
-
-             ## Status: To process
+                cat ("added neighborly to cache: ", length(projects$platform[projects$platform=="neighborly"]))
+                
+                ## Status: operational
 
 ## platform: [20] catarse
 
+        } else if (toString(platforms[i, 1])=="catarse"){
+                platformurl <- "https://www.catarse.me/pt/projects?page="
+                platformurl.pages <- paste(platformurl, c(1:30), sep ="")
+                doubles <- NULL
+                for (j in platformurl.pages) {
+                        pagesource <- readLines(j)
+                        pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+                        links <- as.vector(xpathSApply(pagesource.raw, "//a[@class = 'link-hidden']/@href"))
+                        doubles <- c(doubles,links)
+                }
+                links <- unique(doubles)
+                links.complete <- paste("https:/www.catarse.me", links, sep = "")
+                projects.add <- data.frame(platform = "catarse", url = links.complete)
+                projects <- rbind (projects, projects.add)
 
-
-             ## Status: To process      
+                cat ("added catarse to cache: ", length(projects$platform[projects$platform=="catarse"]))
+                
+                ## Status: operational   
 
 ## platform: [21] kickstarter
 
+        } else if (toString(platforms[i, 1])=="kickstarter"){
+                platformurl <- "https://www.kickstarter.com/discover/advanced?google_chrome_workaround&page="
+                platformurl.pages <- paste(platformurl, c(1:6), "&category_id=259&woe_id=0&sort=magic", sep ="")
+                for (j in platformurl.pages) {
+                        pagesource <- readLines(j)
+                        pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+                        links <- as.vector(xpathSApply(pagesource.raw, "//h6/a/@href"))
+                        links.complete <- paste("https://www.kickstarter.com", links[3:length(links)], sep= "")
+                        projects.add <- data.frame(platform = "kickstarter", url = links.complete)
+                        projects <- rbind (projects, projects.add)
+                }
 
+                cat ("added kickstarter to cache: ", length(projects$platform[projects$platform=="kickstarter"]))
+                
+                ## Status: operational
 
-             ## Status: To process   
+## platform: [22] crowdera
 
-## platform: [22] townmeet
+        } else if (toString(platforms[i, 1])=="crowdera"){
+                pagesource <- "http://crowdera.co/campaigns"
+                pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
+                links <- as.vector(xpathSApply(pagesource.raw, "//div[@class='project-title']/a/@href"))
+                links.complete <- paste("http://crowdera.co", links, sep= "")
+                projects.add <- data.frame(platform = "crowdera", url = links.complete)
+                projects <- rbind (projects, projects.add)
 
-
-
-             ## Status: To process   
+                cat ("added crowdera to cache: ", length(projects$platform[projects$platform=="crowdera"]))
+                
+                ## Status: operational   
 
 ## platform: [23] zenfunder
 
-
-
-            ## Status: To process  
+        } else if (toString(platforms[i, 1])=="zenfunder"){
+                print ("zenfunder was not imported. Reason: platform went offline")
+                
+                ## Status: platform offline
 
 ## other platforms
 
@@ -296,3 +403,5 @@ write.csv(projects, file = "projects.csv", quote = FALSE)       ## export datafr
 projects
 
 }
+
+projects <- projectpages()
