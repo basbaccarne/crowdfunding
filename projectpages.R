@@ -18,9 +18,23 @@ platforms <- read.csv("https://raw.githubusercontent.com/basbaccarne/crowdfundin
 # 2DO: simplify with vars
 for(i in 1:nrow(platforms)){
 
-## platform: voorjebuurt
-      if (toString(platforms[i, 1])=="voorjebuurt"){
-            platformurl <- toString(platforms[i, 3])    
+## platform: [1] citizinvestor
+        
+        if (toString(platforms[i, 1])=="citizinvestor"){
+                pagesource <- "http://www.citizinvestor.com/projects/get/projects/status_nearby/all/all/"
+                pagesource.json <- fromJSON(pagesource)
+                links.df <- (pagesource.json$project[6])
+                links <- as.vector(unlist(links.df))
+                links.complete <- paste("http://www.citizinvestor.com/project/", links, sep = "")
+                projects.add <- data.frame(platform = "citizinvestor", url = links.complete)
+                projects <- rbind (projects, projects.add)
+        
+        # Status: operational -- more metadata in json file
+        
+## platform: [2] voorjebuurt
+
+      } else if (toString(platforms[i, 1])=="voorjebuurt"){
+            platformurl <- toString("https://www.voorjebuurt.nl/campaigns/")    
             ## first page
             pagesource <- readLines(platformurl)
             pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
@@ -39,21 +53,10 @@ for(i in 1:nrow(platforms)){
             
             # Status: operational
 
-## platform: citizinvestor
-      } else if (toString(platforms[i, 1])=="citizinvestor"){
-            pagesource <- ("http://www.citizinvestor.com/projects/get/projects/status_nearby/all/all/")
-            pagesource.json <- fromJSON(pagesource)
-            links.df <- (pagesource.json$project[6])
-            links <- as.vector(unlist(links.df))
-            links.complete <- paste("http://www.citizinvestor.com/project/", links, sep = "")
-            projects.add <- data.frame(platform = "citizinvestor", url = links.complete)
-            projects <- rbind (projects, projects.add)
-            
-            # Status: operational -- has a lot more metadata in jsonfile
+## platform: [3] growfunding
 
-## platform: growfunding
       } else if (toString(platforms[i, 1])=="growfunding"){
-            platformurl <- toString(platforms[i, 3]) 
+            platformurl <- toString("https://www.growfunding.be/bxl/project/archive") 
             pagesource <- readLines(platformurl)
             pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
             links <- as.vector(xpathSApply(pagesource.raw, "//a[@class='project_link btn btn-danger']/@href"))
@@ -63,9 +66,10 @@ for(i in 1:nrow(platforms)){
             
             # Status: operational
             
-## platform: neighbour.ly
+## platform: [4] neighbour.ly
+
       } else if (toString(platforms[i, 1])=="neighbourly"){
-            platformurl <- toString(platforms[i, 3]) 
+            platformurl <- toString("https://www.neighbourly.com/projects") 
             pagesource<- readLines(platformurl)
             pagesource.raw <- htmlTreeParse(pagesource, useInternalNodes = T)
             links <- as.vector(xpathSApply(pagesource.raw, "//a[@data-external='true']/@href"))
@@ -73,9 +77,10 @@ for(i in 1:nrow(platforms)){
             projects.add <- data.frame(platform = "neighbourly", url = links.complete)
             projects <- rbind (projects, projects.add)
             
-            ## Status: only 29 project urls are scraped // this is not everything
+            ## Status: in progress: only 29 project urls are scraped // this is not everything
             
-## platform: spacehive
+## platform: [5] spacehive
+
       } else if (toString(platforms[i, 1])=="spacehive"){
             platformurl <- "https://spacehive.com/ProjectSearch/"
             pagesource<- readLines(platformurl)
@@ -87,7 +92,8 @@ for(i in 1:nrow(platforms)){
             
             ## Status: only page one
 
-## platform: IOBY
+## platform: [6] IOBY
+
       } else if (toString(platforms[i, 1])=="ioby"){
             platformurl <- "https://www.ioby.org/projects?phrase=&city=&province=&status=1&vols=All&sort_by=title&sort_order=ASC&items_per_page=All"
             pagesource<- readLines(platformurl)
@@ -99,7 +105,7 @@ for(i in 1:nrow(platforms)){
         
             ## Status: operational
             
-## platform: geeferom
+## platform: [7] geeferom
 
       } else if (toString(platforms[i, 1])=="geeferom"){
               platformurl <- "http://www.geeferom.nl/alle-projecten"
@@ -112,7 +118,7 @@ for(i in 1:nrow(platforms)){
                 
               ## Status: operational
 
-## platform: hkb
+## platform: [8] hkb
 
       } else if (toString(platforms[i, 1])=="hkb"){
               platformurl <- "http://www.hkbu.nl/read/projecten"
@@ -125,7 +131,7 @@ for(i in 1:nrow(platforms)){
               
               ## Status: operational
               
-## platform: zcfp
+## platform: [9] zcfp
 
       } else if (toString(platforms[i, 1])=="zcfp"){
               platformurl <- "http://www.zcfp.nl/project/default?lang=nl"
@@ -138,7 +144,7 @@ for(i in 1:nrow(platforms)){
               
               ## Status: operational
 
-## platform: dordrechtvanstart
+## platform: [10] dordrechtvanstart
 
       } else if (toString(platforms[i, 1])=="dordrechtvanstart"){
               platformurl <- "http://www.dordrechtvanstart.nl/help-starten/?p="
@@ -154,7 +160,7 @@ for(i in 1:nrow(platforms)){
               
               ## Status: operational            
             
-## platform: maakcapelle
+## platform: [11] maakcapelle
 
       } else if (toString(platforms[i, 1])=="maakcapelle"){
               platformurl <- "http://www.maakcapelle.nl/activities.php?p12="
@@ -173,11 +179,25 @@ for(i in 1:nrow(platforms)){
               
               ## Status: operational  
               
-## platform: onepercentclub
+## platform: [12] onepercentclub
+
+
 
               ## Status: To process
 
-## platform: communityfunded
+## platform: [13] urbankit
+
+
+
+             ## Status: To process
+
+## platform: [14] goteo
+
+
+
+             ## Status: To process
+
+## platform: [15] communityfunded
 
       } else if (toString(platforms[i, 1])=="communityfunded"){
               platformurl <- "http://communityfunded.com/explore-projects/page/"
@@ -193,7 +213,7 @@ for(i in 1:nrow(platforms)){
               
               ## Status: operational
 
-## platform: uruut
+## platform: [16] uruut
 
       } else if (toString(platforms[i, 1])=="uruut"){
               platformurl <- "https://www.uruut.com/browse/projects?"
@@ -212,7 +232,7 @@ for(i in 1:nrow(platforms)){
               
               ## Status: operational
 
-## platform: smallknot
+## platform: [17] smallknot
 
       } else if (toString(platforms[i, 1])=="smallknot"){
               platformurl <- "http://smallknot.com/browse/campaigns"
@@ -224,19 +244,54 @@ for(i in 1:nrow(platforms)){
               
               ## Status: operational
 
+## platform: [18] ideaginger
+              
+              
+              
+              ## Status: To process
+
+## platform: [19] neighborly
+
+
+
+             ## Status: To process
+
+## platform: [20] catarse
+
+
+
+             ## Status: To process      
+
+## platform: [21] kickstarter
+
+
+
+             ## Status: To process   
+
+## platform: [22] townmeet
+
+
+
+             ## Status: To process   
+
+## platform: [23] zenfunder
+
+
+
+            ## Status: To process  
+
 ## other platforms
+
       } else {
             print (toString(platforms[i, 1]))
       }
 }
 
-## add timestamp 
 
-projects <- cbind (projects, measured.on = Sys.Date())
+## // bottle the data//
 
-## export dataframe to file
-
-write.csv(projects, file = "projects.csv", quote = FALSE)
+projects <- cbind (projects, measured.on = Sys.Date())          ## add timestamp 
+write.csv(projects, file = "projects.csv", quote = FALSE)       ## export dataframe to file 
 
 projects
 
