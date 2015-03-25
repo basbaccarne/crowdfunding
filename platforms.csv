@@ -1,19 +1,24 @@
-name,url,projectsurl,language
-citizinvestor,http://www.citizinvestor.com/,http://www.citizinvestor.com/projects,en
-voorjebuurt,https://www.voorjebuurt.nl/,https://www.voorjebuurt.nl/campaigns/,nl
-growfunding,https://www.growfunding.be/,https://www.growfunding.be/bxl/project/archive,nl
-neighbourly,https://www.neighbourly.com/,https://www.neighbourly.com/projects,en
-spacehive,https://spacehive.com/,https://spacehive.com/ProjectSearch,en
-ioby,https://www.ioby.org/,https://www.ioby.org/projects,en
-geeferom,www.geeferom.nl/,http://www.geeferom.nl/alle-projecten,nl
-hkb,http://www.hkbu.nl/,http://www.hkbu.nl/read/projecten,nl
-zcfp,http://www.zcfp.nl/,http://www.zcfp.nl/project/default?lang=nl,nl
-dordrechtvanstart,http://www.dordrechtvanstart.nl/,http://www.dordrechtvanstart.nl/beeindigde-projecten,nl
-maakcapelle,http://www.maakcapelle.nl/,http://www.maakcapelle.nl/activities.php?view=ActivityOverview,nl
-onepercentclub,https://onepercentclub.com/en/,https://onepercentclub.com/en/#!/projects,nl
-urbankit,http://urbank.it/,,it
-goteo,http://www.goteo.org/,http://www.goteo.org/discover,esp
-communityfunded,http://communityfunded.com/,http://communityfunded.com/explore-projects/,en
-uruut,https://www.uruut.com/,https://www.uruut.com/browse/projects,en
-smallknot,http://www.smallknot.com/,http://smallknot.com/browse/campaigns,en
-ideaginger,http://www.ideaginger.it/,http://www.ideaginger.it/,it
+name,url,projectsurl,language, country, status
+citizinvestor,http://www.citizinvestor.com/,http://www.citizinvestor.com/projects,en,US,ok
+voorjebuurt,https://www.voorjebuurt.nl/,https://www.voorjebuurt.nl/campaigns/,nl,NL,ok
+growfunding,https://www.growfunding.be/,https://www.growfunding.be/bxl/project/archive,nl,BE,ok
+neighbourly,https://www.neighbourly.com/,https://www.neighbourly.com/projects,en,UK,in progress
+spacehive,https://spacehive.com/,https://spacehive.com/ProjectSearch,en,UK,in progress
+ioby,https://www.ioby.org/,https://www.ioby.org/projects,en,US,ok
+geeferom,www.geeferom.nl/,http://www.geeferom.nl/alle-projecten,nl,NL,ok
+hkb,http://www.hkbu.nl/,http://www.hkbu.nl/read/projecten,nl,NL,ok
+zcfp,http://www.zcfp.nl/,http://www.zcfp.nl/project/default?lang=nl,nl,NL,ok
+dordrechtvanstart,http://www.dordrechtvanstart.nl/,http://www.dordrechtvanstart.nl/beeindigde-projecten,nl,NL,ok
+maakcapelle,http://www.maakcapelle.nl/,http://www.maakcapelle.nl/activities.php?view=ActivityOverview,nl,NL,ok
+onepercentclub,https://onepercentclub.com/en/,https://onepercentclub.com/en/#!/projects,nl,NL,in progress
+urbankit,http://urbank.it/,,it,IT,in progress
+goteo,http://www.goteo.org/,http://www.goteo.org/discover,esp,ESP,in progress
+communityfunded,http://communityfunded.com/,http://communityfunded.com/explore-projects/,en,US,ok
+uruut,https://www.uruut.com/,https://www.uruut.com/browse/projects,en,US,ok
+smallknot,http://www.smallknot.com/,http://smallknot.com/browse/campaigns,en,US,ok
+ideaginger,http://www.ideaginger.it/,http://www.ideaginger.it/,it,IT,in progress
+neighborly,https://neighbor.ly,,en,US,in progress
+catarse,,,esp,BRA,in progress
+kickstarter,https://www.kickstarter.com/discover/categories/design/civic%20design?ref=category,,en,,in progress
+townmeet,http://townmeet.org,,en,,in progress
+zenfunder,https://www.citysourced.com/zenfunder,,en,,in progress
