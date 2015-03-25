@@ -158,6 +158,11 @@ citizinvestor <- function (url, dump){
                    success, start, end, runtime, finished, facebookurl, facebooklikes, commentcount, 
                    backercount, pitch)
 }
+## Status: WIP (look at NAs, and fact check)
+
+growfunding <- function (url, dump){
+        
+}
 
 zcfp <- function(url, dump){
         #dump <- as.character(raw.data$dump[246])
